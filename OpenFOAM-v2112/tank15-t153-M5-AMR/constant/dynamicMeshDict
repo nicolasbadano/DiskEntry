@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2112                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//dynamicFvMesh       dynamicMotionSolverFvMesh;
+dynamicFvMesh       dynamicMotionSolverRefineFvMesh;
+
+motionSolverLibs    (
+    sixDoFRigidBodyMotion
+    "libfvMotionSolvers.so"
+);
+
+solver    velocityLaplacian;
+velocityLaplacianCoeffs
+{
+    diffusivity directional (5 5 1);//inverseDistance (movingObject);
+    nNonOrthogonalCorrectors 5;
+}
+
+
+/*solver displacementLaplacian;
+displacementLaplacianCoeffs
+{
+    diffusivity uniform 1;//inverseDistance (movingObject);
+}*/
+
+
+dynamicMotionSolverRefineFvMeshCoeffs
+{
+    refineInterval 10;
+
+    field alpha.water;
+    // Refine field inbetween lower..upper
+    lowerRefineLevel 0.001;
+    upperRefineLevel 0.999;
+    // If value < unrefineLevel unrefine
+    unrefineLevel 10;
+    // Have slower than 2:1 refinement
+    nBufferLayers 5;
+    // Refine cells only up to maxRefinement levels
+    maxRefinement 2;
+    // Stop refinement if maxCells reached
+    maxCells 2000000;
+    correctFluxes
+    (
+        (phi none)
+        (phi_0 none)
+        (nHatf none)
+        (rhoPhi none)
+        (alphaPhi none)
+        (alphaPhi_ none)
+
+        (ghf none)
+        (faceDiffusivity none)
+        (dVf_ none)
+        (meshPhiCN_0 none)
+
+        (alphaPhi0.water none)
+        (alphaPhi0.water_0 none)
+        (alphaPhiUn none)
+    );
+    dumpLevel true;
+}
+
+// ************************************************************************* //

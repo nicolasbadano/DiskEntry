@@ -1,0 +1,130 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2112                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+libs            (overset fvMotionSolvers);
+
+application     interFoam;
+
+startFrom       latestTime;
+
+startTime       0.0;
+
+stopAt          endTime;
+
+endTime         0.35;
+
+deltaT          0.00001;
+
+writeControl    adjustable;
+
+writeInterval   0.01;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  12;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.9;
+maxAlphaCo      0.9;
+
+maxDeltaT       0.0003;
+
+libs (
+    "libmotionRefinementFvMesh.so"
+    "libsixDoFRigidBodyVelocity.so"
+);
+
+functions
+{
+    yPlus1
+    {
+        type            yPlus;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    writeTime;
+    }
+
+    surfaceSampling
+    {
+        type            surfaces;
+        libs            (sampling);
+        writeControl    runTime;
+        writeInterval   0.001;
+
+        interpolationScheme cellPointWallModified;
+
+        surfaceFormat ensight;
+
+        formatOptions
+        {
+            vtp
+            {
+                format binary;
+            }
+        }
+
+        // Fields to be sampled
+        fields
+        (
+            U
+            k
+            omega
+            nut
+            alpha.water
+        );
+
+        surfaces
+        {
+            freeSurface
+            {
+                type            isoSurface;
+                isoField        alpha.water;
+                isoValue        0.5;
+                interpolate     true;
+            }
+            movingObject
+            {
+                type            patch;
+                patches         (movingObject);
+                interpolate     true;
+            }
+            yNormal
+            {
+                type        cuttingPlane;
+                planeType   pointAndNormal;
+                pointAndNormalDict {
+                    point       (0 0 0);
+                    normal      (0 1 0);
+                }
+                interpolate true;
+            }
+        }
+    }
+}
+
+
+// ************************************************************************* //
+
