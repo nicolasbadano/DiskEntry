@@ -20,6 +20,10 @@ For `tank15-t153-M5-AMR`:
 * Run the `prepare.sh` to generate the mesh and setup the simulation.
 * Then run the case with `interIsoFoam`
 
+## Video
+
+[![Watch the video](https://img.youtube.com/vi/jRgTZShhLTE/maxresdefault.jpg)](https://youtu.be/jRgTZShhLTE)
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
